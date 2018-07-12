@@ -99,9 +99,9 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
-	Delay_Init(32);
-	SSD1306_Init();
-	DHT11_Init();
+  Delay_Init(32);
+  SSD1306_Init();
+  DHT11_Init();
 	
 	char buf[25];
 
