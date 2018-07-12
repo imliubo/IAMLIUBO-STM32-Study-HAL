@@ -103,17 +103,17 @@ int main(void)
   SSD1306_Init();
   DHT11_Init();
 	
-	char buf[25];
+  char buf[25];
 
   /* USER CODE BEGIN 2 */
-	SSD1306_GotoXY(15,20);
-	SSD1306_Puts("system start...", &Font_7x10, SSD1306_COLOR_WHITE);
-	SSD1306_UpdateScreen();
-	Delay_ms(1000);
-	SSD1306_GotoXY(15,45);
-	SSD1306_Puts("www.imliubo.me", &Font_7x10, SSD1306_COLOR_WHITE);
-	SSD1306_UpdateScreen();
-	Delay_ms(2000);
+  SSD1306_GotoXY(15,20);
+  SSD1306_Puts("system start...", &Font_7x10, SSD1306_COLOR_WHITE);
+  SSD1306_UpdateScreen();
+  Delay_ms(1000);
+  SSD1306_GotoXY(15,45);
+  SSD1306_Puts("www.imliubo.me", &Font_7x10, SSD1306_COLOR_WHITE);
+  SSD1306_UpdateScreen();
+  Delay_ms(2000);
 	
 
   /* USER CODE END 2 */
@@ -125,17 +125,17 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-//		printf("read data!\r\n");
-		DHT11_Read_Data(&DHT11);
-		printf("TEMP: %d HUMD: %d\r\n",DHT11.Temperature,DHT11.Humidity);
-		sprintf(buf, "TEMP: %d HUMD: %d",DHT11.Temperature,DHT11.Humidity);
-		SSD1306_Fill(SSD1306_COLOR_BLACK);
-		SSD1306_GotoXY(2,20);
-		SSD1306_Puts(buf, &Font_7x10, SSD1306_COLOR_WHITE);
-		SSD1306_GotoXY(15,40);
-		SSD1306_Puts("www.imliubo.me", &Font_7x10, SSD1306_COLOR_WHITE);
-		SSD1306_UpdateScreen();
-		Delay_ms(3000);	
+  //		printf("read data!\r\n");
+     DHT11_Read_Data(&DHT11);
+     printf("TEMP: %d HUMD: %d\r\n",DHT11.Temperature,DHT11.Humidity);
+     sprintf(buf, "TEMP: %d HUMD: %d",DHT11.Temperature,DHT11.Humidity);
+     SSD1306_Fill(SSD1306_COLOR_BLACK);
+     SSD1306_GotoXY(2,20);
+     SSD1306_Puts(buf, &Font_7x10, SSD1306_COLOR_WHITE);
+     SSD1306_GotoXY(15,40);
+     SSD1306_Puts("www.imliubo.me", &Font_7x10, SSD1306_COLOR_WHITE);
+     SSD1306_UpdateScreen();
+     Delay_ms(3000);	
 
   }
   /* USER CODE END 3 */
