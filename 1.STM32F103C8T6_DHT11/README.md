@@ -1,6 +1,4 @@
-# SNTP example
-
-Refresh time every 10 seconds!
+# DHT11 example
 
 ## Hardware:
 * STM32F103C8T6
@@ -14,12 +12,15 @@ Refresh time every 10 seconds!
 * J-link OB
 
 ## Options:
+* Crystal: 8Mhz
 * HCLK: 32Mhz
-* USART1 BAUD: 115200
+* USART1:
+	* Mode: Asynchronous
+	* BAUD: 115200
 
 ## Hardware connection:
 DHT11|<---->|STM32
 -|-|-
-data pin|<---->| PB4
+Data Pin|<---->| PB4
 
 ## Result:
