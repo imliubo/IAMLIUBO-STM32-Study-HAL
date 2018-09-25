@@ -102,7 +102,7 @@ int main(void)
 	
 	//printf("init success!\r\n");
 	printf("DHT11 TEST!\r\n");
-	printf("http://www.imliubo.me!\r\n");
+	printf("http://www.makingfun.xyz!\r\n");
 
   /* USER CODE END 2 */
 
