@@ -1,4 +1,4 @@
-# DHT11 example
+# WS2812B example
 
 ## Hardware:
 * STM32F103C8T6
