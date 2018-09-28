@@ -42,7 +42,7 @@ SOFTWARE.
 #define AT24C08		1023	//PAGE_SIZE	16	byte
 #define AT24C16		2047	//PAGE_SIZE	16	byte
 #define AT24C32		4095    //PAGE_SIZE	16	byte
-#define AT24C64	    8191    //PAGE_SIZE	16	byte
+#define AT24C64	  8191    //PAGE_SIZE	16	byte
 #define AT24C128	16383   //PAGE_SIZE	16	byte
 #define AT24C256	32767   //PAGE_SIZE	16	byte
 
