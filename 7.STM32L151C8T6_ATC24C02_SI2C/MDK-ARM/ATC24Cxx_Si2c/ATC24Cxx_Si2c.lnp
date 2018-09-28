@@ -1,0 +1,28 @@
+--cpu Cortex-M3
+"atc24cxx_si2c\startup_stm32l151xb.o"
+"atc24cxx_si2c\main.o"
+"atc24cxx_si2c\gpio.o"
+"atc24cxx_si2c\usart.o"
+"atc24cxx_si2c\stm32l1xx_it.o"
+"atc24cxx_si2c\stm32l1xx_hal_msp.o"
+"atc24cxx_si2c\at24cxx_si2c.o"
+"atc24cxx_si2c\si2c.o"
+"atc24cxx_si2c\stm32l1xx_hal_tim.o"
+"atc24cxx_si2c\stm32l1xx_hal_tim_ex.o"
+"atc24cxx_si2c\stm32l1xx_hal_uart.o"
+"atc24cxx_si2c\stm32l1xx_hal.o"
+"atc24cxx_si2c\stm32l1xx_hal_rcc.o"
+"atc24cxx_si2c\stm32l1xx_hal_rcc_ex.o"
+"atc24cxx_si2c\stm32l1xx_hal_flash.o"
+"atc24cxx_si2c\stm32l1xx_hal_flash_ex.o"
+"atc24cxx_si2c\stm32l1xx_hal_flash_ramfunc.o"
+"atc24cxx_si2c\stm32l1xx_hal_gpio.o"
+"atc24cxx_si2c\stm32l1xx_hal_dma.o"
+"atc24cxx_si2c\stm32l1xx_hal_pwr.o"
+"atc24cxx_si2c\stm32l1xx_hal_pwr_ex.o"
+"atc24cxx_si2c\stm32l1xx_hal_cortex.o"
+"atc24cxx_si2c\system_stm32l1xx.o"
+--library_type=microlib --strict --scatter "ATC24Cxx_Si2c\ATC24Cxx_Si2c.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "ATC24Cxx_Si2c.map" -o ATC24Cxx_Si2c\ATC24Cxx_Si2c.axf
