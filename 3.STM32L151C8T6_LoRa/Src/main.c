@@ -122,11 +122,11 @@ int main(void)
 	/*
 	SX1278_LoRaEntryRx -> Receive
 	*/
-	SX1278_LoRaEntryRx(&SX1278, 20, 2000);
+//	SX1278_LoRaEntryRx(&SX1278, 20, 2000);
 	/*
 	SX1278_LoRaEntryTx -> Transmit
 	*/
-//	SX1278_LoRaEntryTx(&SX1278, 20, 2000);
+	SX1278_LoRaEntryTx(&SX1278, 20, 2000);
 	
 	/* USER CODE END 2 */
   /* Infinite loop */
@@ -137,21 +137,21 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
 //   
-//			printf("Sending package...\r\n");
-//			message_length = sprintf(buffer, "www.makingfun.xyz -> [%d]", message);
-//			ret = SX1278_LoRaEntryTx(&SX1278, message_length, 1000);
-//			printf("Sending %s\r\n", buffer);
-//			ret = SX1278_LoRaTxPacket(&SX1278, (uint8_t *) buffer, message_length,
-//					2000);
-//			message += 1;
+			printf("Sending package...\r\n");
+			message_length = sprintf(buffer, "www.makingfun.xyz -> [%d]", message);
+			ret = SX1278_LoRaEntryTx(&SX1278, message_length, 1000);
+			printf("Sending %s\r\n", buffer);
+			ret = SX1278_LoRaTxPacket(&SX1278, (uint8_t *) buffer, message_length,
+					2000);
+			message += 1;
 
-			ret = SX1278_LoRaRxPacket(&SX1278);
-			if (ret > 0) {
-				SX1278_read(&SX1278, (uint8_t *) buffer, ret);
-				printf("Receiving package...\r\n");
-				printf("%s\r\n",buffer);
-				ret =0;
-			}		
+//			ret = SX1278_LoRaRxPacket(&SX1278);
+//			if (ret > 0) {
+//				SX1278_read(&SX1278, (uint8_t *) buffer, ret);
+//				printf("Receiving package...\r\n");
+//				printf("%s\r\n",buffer);
+//				ret =0;
+//			}		
   }
   /* USER CODE END 3 */
 
