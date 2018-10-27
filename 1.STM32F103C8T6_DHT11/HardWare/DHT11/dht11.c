@@ -1,114 +1,245 @@
 /*
-*作者：imliubo   时间：2018-01-04
-*个人主页：http://www.imliubo.me  Github:http://github.com/imliubo
-*说明：DHT11模块驱动程序
-*DHT11_GPIO_Port，DHT11_Pin相关定义在main.h文件
+MIT License
+
+Copyright (c) 2018 imliubo
+
+Github  https://github.com/imliubo 
+Website https://www.makingfun.xyz
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 */
-
 #include "dht11.h"
+#include <string.h>
+#include "delay.h"
+
+thTypedef_t temphumTypedef;
 
 
-//私有函数声明
-static uint8_t DHT11_ReadByte(void);
-static void DHT11_IO_IN(void);
-static void DHT11_IO_OUT(void);
-
-//将主机设置为输入模式
-void DHT11_IO_IN(void)
-{
-		GPIO_InitTypeDef GPIO_InitStruct;
-		GPIO_InitStruct.Pin = DHT11_Pin;
-		GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-		GPIO_InitStruct.Pull = GPIO_PULLUP;
-		HAL_GPIO_Init(DHT11_GPIO_Port, &GPIO_InitStruct);
-}
-
-//将主机设置为输出模式
 void DHT11_IO_OUT(void)
 {
-		GPIO_InitTypeDef GPIO_InitStruct;
-		GPIO_InitStruct.Pin = DHT11_Pin;
-		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-		HAL_GPIO_Init(DHT11_GPIO_Port, &GPIO_InitStruct);
+    GPIO_InitTypeDef myGPIO_InitStruct;
+    myGPIO_InitStruct.Pin = DHT11_GPIO_PIN;
+    myGPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    myGPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(DHT11_GPIO_PORT, &myGPIO_InitStruct);
 }
 
-//DHT11初始化
-void DHT11_Init(void)
+void DHT11_IO_IN(void)
 {
-	DHT11_IO_HIGH();	//将DHT11_Pin拉高
+    GPIO_InitTypeDef myGPIO_InitStruct;
+    myGPIO_InitStruct.Pin = DHT11_GPIO_PIN;
+    myGPIO_InitStruct.Pull = GPIO_PULLUP;
+    myGPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    myGPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(DHT11_GPIO_PORT, &myGPIO_InitStruct);
 }
 
-//从DHT11读取一个字节,返回值byte
-
-uint8_t DHT11_ReadByte(void)
+//Reset DHT11
+static void dht11Rst(void)
 {
-	uint8_t i,byte=0;
-	for(i=0;i<8;i++)
-	{
-		//每bit数据以50us低电平开始，等待低电平结束
-		while(DHT11_IO_Read()==GPIO_PIN_RESET);
-		/*
-		*DHT11以高电平的时间长短表示0跟1,26~28us表示0，70us表示1。
-		*/
-		
-		Delay_us(40);//延时 x us 大于数据0的时间即可
-		
-		if(DHT11_IO_Read()==GPIO_PIN_SET)//延时x us过后仍为高电平表示数据1
-		{
-			//等待数据1高电平结束
-			while(DHT11_IO_Read()==GPIO_PIN_SET);
-			//把7-i为置1，
-			byte|=(uint8_t)(0x01<<(7-i));
-		}else{//延时 x us后为低电平  表示数据0
-			//把7-i位置0，
-			byte&=(uint8_t)~(0x01<<(7-i));
-		}
-	}
-	
-	return byte;//返回一个bit的值
+    DHT11_IO_OUT(); 			            //SET OUTPUT
+    DHT11_DQ_OUT_0; 			            //GPIOA.0=0
+    Delay_ms(20);    			            //Pull down Least 18ms
+    DHT11_DQ_OUT_1; 			            //GPIOA.0=1
+    Delay_us(30);     			            //Pull up 20~40us
 }
 
-uint8_t DHT11_Read_Data(DHT11_ReadTypeDef *DHT11_DATA)
+static uint8_t dht11Check(void)
 {
-		uint8_t i;
-		uint8_t buf[5];
-		
-		DHT11_IO_OUT();//主机设置为输出模式
-		
-		DHT11_IO_LOW();//主机拉低
-		
-		Delay_ms(18);//延时18ms
-		
-		DHT11_IO_HIGH();//拉高
-		
-		Delay_us(30);//延时30us
-		
-		DHT11_IO_IN();//主机设置为输入模式
-	
-		if(DHT11_IO_Read()==GPIO_PIN_RESET)//判断DHT11是否有低电平响应信号，如果有向下运行，没有跳出
-		{
-			while(DHT11_IO_Read()==GPIO_PIN_RESET);//等待低电平响应信号结束
-			
-			while(DHT11_IO_Read()==GPIO_PIN_SET);//等待高电平响应信号结束
-			
-			for(i=0;i<5;i++)
-			{
-				buf[i]=DHT11_ReadByte();//读取5bit的数据。存入到buf数组中
-			}
-			if((buf[0]+buf[1]+buf[2]+buf[3])==buf[4])//校验接收到的数据是否正确
-			{
-				printf("read data success!\r\n");
-				DHT11_DATA->Humidity=buf[0];//buf[0]存入到Humidity
-				DHT11_DATA->Temperature=buf[2];//buf[2]存入到Temperature
-				//DHT11精度为1，buf[1],buf[3]存取的小数位，所以不用处理 直接舍去
-			}else{
-				printf("read data error!\r\n");
-			}
-		}else{
-			printf("DHT11 NO DATA!\r\n");
-		}
-		return 1;
+    uint8_t retry=0;
+    DHT11_IO_IN();                                              //SET INPUT
+    while (DHT11_DQ_IN && (retry<100))                          //DHT11 Pull down 40~80us
+    {
+        retry++;
+        Delay_us(1);
+    }
+
+    if(retry >= 100)
+    {
+        return 1;
+    }
+    else
+    {
+        retry=0;
+    }
+
+    while (!DHT11_DQ_IN&& (retry < 100))		    //DHT11 Pull up 40~80us
+    {
+        retry++;
+        Delay_us(1);
+    }
+
+    if(retry >= 100)
+    {
+        return 1;	                        //check error
+    }        
+
+    return 0;
 }
 
+static uint8_t dht11ReadBit(void)
+{
+    uint8_t retry=0;
+    while(DHT11_DQ_IN && (retry<100))                           //wait become Low level
+    {
+        retry++;
+        Delay_us(1);
+    }
 
+    retry = 0;
+    while(!DHT11_DQ_IN && (retry < 100))		    //wait become High level
+    {
+        retry++;
+        Delay_us(1);
+    }
+
+    Delay_us(30);//wait 40us
+
+    if(DHT11_DQ_IN)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+static uint8_t dht11ReadByte(void)
+{
+    uint8_t i,dat;
+    dat=0;
+    for (i=0; i<8; i++)
+    {
+        dat<<=1;
+        dat |= dht11ReadBit();
+    }
+
+    return dat;
+}
+
+static uint8_t dht11ReadData(uint8_t *temperature, uint8_t *humidity)
+{
+    uint8_t buf[5];
+    uint8_t i;
+    dht11Rst(); 
+    if(0 == dht11Check()) 
+    {
+        for(i=0; i<5; i++)
+        {
+            buf[i] = dht11ReadByte();
+        }
+        if(buf[4] == (buf[0]+buf[1]+buf[2]+buf[3]))
+        {
+            *humidity = buf[0];
+            *temperature = buf[2];
+        }
+    }
+    else
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+uint8_t dht11Read(uint8_t *temperature, uint8_t *humidity)
+{
+    uint8_t curTem = 0, curHum = 0;
+    uint16_t temMeans = 0, humMeans = 0;
+    uint8_t curI = 0;
+    uint8_t ret = 0; 
+
+    ret = dht11ReadData(&curTem, &curHum);
+
+    if(1 != ret) 
+    {
+        //Cycle store ten times stronghold
+        if(MEAN_NUM > temphumTypedef.curI)
+        {
+            temphumTypedef.thBufs[temphumTypedef.curI][0] = curTem;
+            temphumTypedef.thBufs[temphumTypedef.curI][1] = curHum;
+
+            temphumTypedef.curI++;
+        }
+        else
+        {
+            temphumTypedef.curI = 0;
+
+            temphumTypedef.thBufs[temphumTypedef.curI][0] = curTem;
+            temphumTypedef.thBufs[temphumTypedef.curI][1] = curHum;
+
+            temphumTypedef.curI++;
+        }
+    }
+    else
+    {
+        return (1); 
+    }
+    
+    if(MEAN_NUM <= temphumTypedef.curI) 
+    {
+        temphumTypedef.thAmount = MEAN_NUM;
+    }
+
+    if(0 == temphumTypedef.thAmount) 
+    {
+        //Calculate Before ten the mean
+        for(curI = 0; curI < temphumTypedef.curI; curI++)
+        {
+            temMeans += temphumTypedef.thBufs[curI][0];
+            humMeans += temphumTypedef.thBufs[curI][1];
+        }
+
+        temMeans = temMeans / temphumTypedef.curI;
+        humMeans = humMeans / temphumTypedef.curI; 
+        
+        *temperature = temMeans;
+        *humidity = humMeans;
+    }
+    else if(MEAN_NUM == temphumTypedef.thAmount) 
+    {
+        //Calculate After ten times the mean
+        for(curI = 0; curI < temphumTypedef.thAmount; curI++) 
+        {
+            temMeans += temphumTypedef.thBufs[curI][0];
+            humMeans += temphumTypedef.thBufs[curI][1];
+        }
+
+        temMeans = temMeans / temphumTypedef.thAmount; 
+        humMeans = humMeans / temphumTypedef.thAmount; 
+        
+        *temperature = (uint8_t)temMeans; 
+        *humidity = (uint8_t)humMeans; 
+    }
+
+    return (0);
+}
+
+uint8_t dht11Init(void)
+{
+    /* Migrate your driver code */
+    dht11Rst(); 
+    
+    memset((uint8_t *)&temphumTypedef, 0, sizeof(thTypedef_t)); 
+    
+//    printf("dh11Init \r\n"); 
+    
+    return dht11Check(); 
+}

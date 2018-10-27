@@ -49,9 +49,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-DHT11_ReadTypeDef DHT11;
-
-
+uint8_t temp,humd;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,14 +92,14 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-	Delay_Init(32);
+	Delay_Init();
 	
-	DHT11_Init();
+	dht11Init();
 
   /* USER CODE BEGIN 2 */
 	
 	//printf("init success!\r\n");
-	printf("DHT11 TEST!\r\n");
+	printf("DHT11 DEMO!\r\n");
 	printf("http://www.makingfun.xyz!\r\n");
 
   /* USER CODE END 2 */
@@ -111,9 +109,9 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-		DHT11_Read_Data(&DHT11);
-		printf("Temperature: %d Humidity: %d \r\n",DHT11.Temperature,DHT11.Humidity);
-		Delay_ms(5000);
+		dht11Read(&temp,&humd);
+		printf("Temperature: %d Humidity: %d \r\n",temp,humd);
+		HAL_Delay(2000);
 
   /* USER CODE BEGIN 3 */
 
